@@ -1,62 +1,44 @@
 import pygame, sys
 from rocket import Rocket
-from bullet import Bullet
-from  enemy import Enemy
+from enemies.enemy_collection import EnemyCollection
+from settings import Settings
 
 class Game(object):
-
     def __init__(self):
-        # Config
-        self.max_tps = 100.0
-        self.resolution = [800,600]
-
-        #Init
         pygame.init()
-        self.screen = pygame.display.set_mode(self.resolution)
-        self.tps_clock = pygame.time.Clock()
-        self.tps_delta = 0.0
 
-        self.player = Rocket(self)
-        self.bullet = Bullet(self)
-        self.enemy = Enemy(self)
+        self.tps_delta = 0.0
+        self.tps_clock = pygame.time.Clock()
+
+        self.player = Rocket()
+        self.enemies = EnemyCollection()
 
         while True:
-            # Events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit(0)
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     sys.exit(0)
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                    self.bullet.bullets.append([self.player.pos.x - (self.player.direction.y * 17), self.player.pos.y + (self.player.direction.x * 17), self.player.direction])
+                    self.player.fire_bullet()
 
-            # Ticking
             self.tps_delta += self.tps_clock.tick() / 1000.0
-            while self.tps_delta > 1 / self.max_tps:
+            while self.tps_delta > 1 / Settings.MAX_TPS:
                 self.tick()
-                self.tps_delta -= 1 / self.max_tps
+                self.tps_delta -= 1 / Settings.MAX_TPS
 
-            # Rendering
-            self.screen.fill((0, 0, 0))
+            Settings.SCREEN.fill((0, 0, 0))
             self.draw()
             pygame.display.flip()
 
-
     def tick(self):
         self.player.tick()
-        self.bullet.tick()
-        self.enemy.tick()
+        self.enemies.tick()
+        self.enemies.destroy_on_collision(self.player.bullets)
 
     def draw(self):
         self.player.draw()
-        self.bullet.draw()
-        self.enemy.draw()
+        self.enemies.draw()
 
 if __name__ == "__main__":
     Game()
-
-
-
-
-
-

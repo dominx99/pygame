@@ -1,31 +1,34 @@
 import pygame
 from pygame.math import Vector2
+from bullets.bullet_collection import BulletCollection
+from bullets.bullet import Bullet
+from settings import Settings
 
 class Rocket(object):
-
-    def __init__(self, game):
-        self.game = game
+    def __init__(self):
         self.airResistance = 0.9
         self.speed = 0.1
         self.gravity = 0.0
 
-        self.size = self.game.screen.get_size()
+        self.screen_size = Settings.SCREEN.get_size()
 
-        self.pos = Vector2(self.size[0]/2,self.size[1]/2)
+        self.pos = Vector2(self.screen_size[0]/2,self.screen_size[1]/2)
         self.vel = Vector2(0,0)
         self.acc = Vector2(0,0)
         self.angle = Vector2(0,0)
         self.direction = Vector2(1,0)
 
+        self.bullets = BulletCollection()
+
     def add_force(self, force):
         self.acc += force
 
     def border_collision(self):
-       if self.pos.x+20 >= self.size[0] or \
+       if self.pos.x+20 >= self.screen_size[0] or \
           self.pos.x-20 <= 0 or \
-          self.pos.y+20 >= self.size[1] or \
+          self.pos.y+20 >= self.screen_size[1] or \
           self.pos.y-20 <= 0:
-            self.pos = Vector2(self.size[0]/2,self.size[1]/2)
+            self.pos = Vector2(self.screen_size[0]/2,self.screen_size[1]/2)
 
     def physic(self):
         self.vel *= self.airResistance
@@ -48,17 +51,13 @@ class Rocket(object):
 
 
     def tick(self):
-        # Input
         self.input()
-
-        # Physics
         self.physic()
 
-        # Get directiion
         self.direction = Vector2(1,0).rotate(-self.angle)
 
-        #Check border collision
         self.border_collision()
+        self.bullets.tick()
 
     def draw(self):
         # Base triangle
@@ -75,6 +74,12 @@ class Rocket(object):
         self.points = [Vector2(self.pos+p*2) for p in points]
 
         #Draw triangle
-        pygame.draw.polygon(self.game.screen, (0,100,255), self.points)
+        pygame.draw.polygon(Settings.SCREEN, (0,100,255), self.points)
 
+        self.bullets.draw()
+
+    def fire_bullet(self):
+        self.bullets.add_bullet(Bullet(
+            self.pos.x - (self.direction.y * 17), self.pos.y + (self.direction.x * 17), self.direction
+        ))
 
