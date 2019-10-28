@@ -3,6 +3,7 @@ from pygame.math import Vector2
 from bullets.bullet_collection import BulletCollection
 from bullets.bullet import Bullet
 from settings import Settings
+from pyjon.events import EventDispatcher
 
 class Rocket(object):
     def __init__(self):
@@ -19,6 +20,12 @@ class Rocket(object):
         self.direction = Vector2(1,0)
 
         self.bullets = BulletCollection()
+        # self.points  = PointCollection()
+        self.bullets.add_listener('killed', self.add_point)
+
+    def add_point(self):
+        # self.points.increment()
+        print("point")
 
     def add_force(self, force):
         self.acc += force
@@ -41,14 +48,13 @@ class Rocket(object):
     def input(self):
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_w]:
-            self.add_force(Vector2(0,-self.speed))
+            self.add_force(Vector2(0, -self.speed))
         if pressed[pygame.K_s]:
-            self.add_force(Vector2(0,self.speed))
+            self.add_force(Vector2(0, self.speed))
         if pressed[pygame.K_a]:
-            self.add_force(Vector2(-self.speed,0))
+            self.add_force(Vector2(-self.speed, 0))
         if pressed[pygame.K_d]:
-            self.add_force(Vector2(self.speed,0))
-
+            self.add_force(Vector2(self.speed, 0))
 
     def tick(self):
         self.input()
@@ -60,26 +66,21 @@ class Rocket(object):
         self.bullets.tick()
 
     def draw(self):
-        # Base triangle
-        points = [Vector2(0,-10), Vector2(5,5), Vector2(-5,5)]
+        points = [Vector2(0, -10), Vector2(5, 5), Vector2(-5, 5)]
 
-        # Rotate points
-        self.angle = self.vel.angle_to(Vector2(0,1))
+        self.angle = self.vel.angle_to(Vector2(0, 1))
+
         points = [p.rotate(self.angle) for p in points]
 
-        #Fix y axis
-        points = [Vector2(p.x,p.y*-1) for p in points]
-
-        # Add current position
+        points = [Vector2(p.x, p.y *- 1) for p in points]
         self.points = [Vector2(self.pos+p*2) for p in points]
 
-        #Draw triangle
         pygame.draw.polygon(Settings.SCREEN, (0,100,255), self.points)
 
         self.bullets.draw()
+        # self.points.draw()
 
     def fire_bullet(self):
         self.bullets.add_bullet(Bullet(
             self.pos.x - (self.direction.y * 17), self.pos.y + (self.direction.x * 17), self.direction
         ))
-

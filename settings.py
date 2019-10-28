@@ -1,6 +1,6 @@
 import pygame
 
 class Settings:
-    RESOLUTION = [800, 600]
+    RESOLUTION = [1366, 780]
     MAX_TPS = 100.0
-    SCREEN = pygame.display.set_mode([800, 600])
+    SCREEN = pygame.display.set_mode([1366, 780])

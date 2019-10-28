@@ -2,6 +2,7 @@ import pygame, sys
 from rocket import Rocket
 from enemies.enemy_collection import EnemyCollection
 from settings import Settings
+from collision import Collision
 
 class Game(object):
     def __init__(self):
@@ -34,7 +35,7 @@ class Game(object):
     def tick(self):
         self.player.tick()
         self.enemies.tick()
-        self.enemies.destroy_on_collision(self.player.bullets)
+        Collision(self.player.bullets, self.enemies)
 
     def draw(self):
         self.player.draw()
