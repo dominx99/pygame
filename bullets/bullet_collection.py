@@ -1,8 +1,7 @@
 from settings import Settings
-from pyjon.events import EventDispatcher
 from bullets.bullet_iterator import BulletIterator
 
-class BulletCollection(object, metaclass = EventDispatcher):
+class BulletCollection(object):
     def __init__(self):
         self.bullets = []
         self.size = Settings.SCREEN.get_size()

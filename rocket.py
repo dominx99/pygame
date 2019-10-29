@@ -1,6 +1,7 @@
 import pygame
 from pygame.math import Vector2
 from bullets.bullet_collection import BulletCollection
+from points.point_collection import PointCollection
 from bullets.bullet import Bullet
 from settings import Settings
 from pyjon.events import EventDispatcher
@@ -20,12 +21,7 @@ class Rocket(object):
         self.direction = Vector2(1,0)
 
         self.bullets = BulletCollection()
-        # self.points  = PointCollection()
-        self.bullets.add_listener('killed', self.add_point)
-
-    def add_point(self):
-        # self.points.increment()
-        print("point")
+        self.points  = PointCollection()
 
     def add_force(self, force):
         self.acc += force
@@ -73,12 +69,12 @@ class Rocket(object):
         points = [p.rotate(self.angle) for p in points]
 
         points = [Vector2(p.x, p.y *- 1) for p in points]
-        self.points = [Vector2(self.pos+p*2) for p in points]
+        points = [Vector2(self.pos+p*2) for p in points]
 
-        pygame.draw.polygon(Settings.SCREEN, (0,100,255), self.points)
+        pygame.draw.polygon(Settings.SCREEN, (0,100,255), points)
 
         self.bullets.draw()
-        # self.points.draw()
+        self.points.draw()
 
     def fire_bullet(self):
         self.bullets.add_bullet(Bullet(

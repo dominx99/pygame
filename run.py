@@ -12,7 +12,7 @@ class Game(object):
         self.tps_clock = pygame.time.Clock()
 
         self.player = Rocket()
-        self.enemies = EnemyCollection()
+        self.enemies = EnemyCollection(self.player.points)
 
         while True:
             for event in pygame.event.get():
